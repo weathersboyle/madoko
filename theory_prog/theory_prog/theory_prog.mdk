@@ -1,0 +1,148 @@
+Title         : OpSem Theory
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+<!-- MathDefs allows us to define some useful commands for formatting
+     inference rules -->
+
+~ MathDefs
+\newcommand{\state}[1]{\langle #1 \rangle}
+\newcommand{\inference}[2]{\dfrac{#1}{#2}}
+\newcommand{\yields}[0]{\Downarrow}
+\newcommand{\twoprem}[2]{\genfrac{}{}{0pt}{0}{\strut #1}{\strut #2}}
+\newcommand{\threeprem}[3]{\twoprem{#1}{\twoprem{#2}{#3}}}
+\newcommand{\fourprem}[4]{\twoprem{#1}{\threeprem{#2}{#3}{#4}}}
+\newcommand{\fiveprem}[5]{\twoprem{#1}{\fourprem{#2}{#3}{#4}{#5}}}
+~
+
+## Instructions {-}
+
+(You can delete this section before you turn in your document.)
+
+Complete the following problems from Chapter 2 of the book. You don't
+need to know a lot about about Markdown or LaTex typesetting -- just
+follow the general form of the examples. Markdown is a very simple and
+nice way to specify document typesetting, and Madoko can generate a
+number of different formats from it, including `html` and `pdf`.
+
+Equations are placed in between `$` dollar signs and are typeset by a
+separate program called LaTex. LaTex is a somewhat unusual language.
+"Commands" are essentially functions with zero or more arguments. The
+name of the command always starts with a backslash, and each argument
+(if there are any) is enclosed in curly braces. Mathematical symbols
+are specified by zero-argument functions with the same name. So,
+`$\phi$` is typeset as $\phi$ and `$\rho$` is typeset as $\rho$.
+
+`\inference` is a LaTex command that takes two arguments enclosed in
+curly braces. The first argument is places on top; the second on the
+bottom. So, `$\inference{premises}{conclusion}$` is typeset as:
+
+$\inference{premises}{conclusion}$
+
+For inference rules that get complicated, you can put various parts on
+separate lines, but you must end each line with a percent sign. Like
+this:
+
+`$\inference%
+    {premises}%
+    {conclusion}$`
+
+LaTex is not great about rendering white space, especially line
+breaks.  When you have multiple terms on a single line you can use the
+`\\` double slash to create a big gap between them. See the example in
+Problem 16 below.
+
+You can add "prime" to any symbol by just adding a tick mark. So,
+`$\rho'$` shows up as $\rho'$, and `$\rho''$` shows up as
+$\rho''$. Superscripts are specified using the `^` symbol: `$\rho^n$`
+is typeset as $\rho^n$.
+
+You will see the `@` in examples below; it's only purpose is to
+supress the standard typesetting of mathematical symbols. Without it,
+`VAR(x)` in an equation would look like $VAR(x)$ instead of
+$@VAR(x)$. Not a huge deal, but I think it looks nicer.
+
+Typesetting derivation trees can be tricky, but if you're careful you
+should be able to create a nested structure using the `\inference`
+command:
+
+$\inference%
+  {\inference{\inference{up}{up}}{premise1} \\ \inference{and away}{premise2}}%
+  {conclusion}$
+
+If you find this approach very painful, you can just write our the
+series of judgements like this:
+
+$up$
+
+$up$
+
+$premise1$
+
+$conclusion$
+
+For more details see the [reference manual] for Madoko.
+
+[reference manual]: http://research.microsoft.com/en-us/um/people/daan/madoko/doc/reference.html  "Madoko refrence manual"
+
+## Problem 16 {-}
+
+### (a) Awk-like semantics {-}
+
+#### UnboundVar (new):
+
+$\inference%
+  {x \notin @dom  \rho \\ x \notin @dom \xi}%
+  {\state{@VAR(x), \xi, \phi, \rho} \yields \state{0, \xi\{x \mapsto 0\}, \phi, \rho}}$
+
+#### GlobalAssign (modified):
+
+$\inference%
+  {x \notin @dom  \rho \\ \state{e, \xi, \phi, \rho} \yields \state{v, \xi', \phi, \rho'}}%
+  {\state{@SET(x,e), \xi, \phi, \rho} \yields \state{v, \xi'\{x \mapsto v\}, \phi, \rho'}}$
+
+### (b) Icon-like semantics {-}
+
+#### UnboundVar (new):
+
+$\inference%
+  {x \notin @dom  \rho \\ x \notin @dom \xi}%
+  {\state{@VAR(x), \xi, \phi, \rho} \yields \state{0, \xi, \phi, \rho\{x \mapsto 0\}}}$
+
+#### UnboundAssign (new):
+
+  $\inference%
+    {\threeprem{x \notin @dom  \rho}%
+               {x \notin @dom \xi}%
+               {\state{e, \xi, \phi, \rho} \yields \state{v, \xi', \phi, \rho'}}}%
+    {\state{@SET(x,e), \xi, \phi, \rho} \yields \state{v, \xi', \phi, \rho'\{x \mapsto v\}}}$
+
+### (c) Which do you prefer and why? {-}
+
+I prefer Awk-like semantics, insofar as only a single new rule needs to be introduced; the GlobalAssign rule modified for Awk can be invoked for `SET`, whether the variable `x` is 
+in the domain of $\xi$ or not (when `x` is not in the domain of $\rho$). In contrast, Icon-like
+semantics require that a new rule be added for assignment; cases where `x` is not in the domain of 
+$\rho$ must be further divided along the lines of whether `x` is in the domain of 
+$\xi$, as the resulting environments for each condition differ. 
+
+## Problem 13 {-}
+
+$\inference%
+    {\twoprem{\inference%
+  {{x\in @dom \rho} \\ \inference{}{\state{@LITERAL(3), \xi, \phi, \rho} \yields \state{3, \xi, \phi, \rho}}}%
+  {\state{@SET(x, @LITERAL(3)), \xi, \phi, \rho} \yields \state{3, \xi, \phi, \rho\{x \mapsto 3\}}}}%
+               {\inference%
+  {x\in @dom \rho \\ \rho(x) = 3}%
+  {\state{@VAR(x), \xi, \phi, \rho} \yields \state{3, \xi, \phi, \rho}}}}%
+    {\state{@BEGIN(@SET(x, @LITERAL(3)), @VAR(x)), \xi, \phi, \rho} \yields \state{3, \xi, \phi, \rho}}$
+
+## Problem 14 {-}
+
+## Problem 23 {-}
+
