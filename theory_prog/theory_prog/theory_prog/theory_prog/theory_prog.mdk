@@ -1,0 +1,151 @@
+Title         : OpSem Theory
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+<!-- MathDefs allows us to define some useful commands for formatting
+     inference rules -->
+
+~ MathDefs
+\newcommand{\state}[1]{\langle #1 \rangle}
+\newcommand{\inference}[2]{\dfrac{#1}{#2}}
+\newcommand{\yields}[0]{\Downarrow}
+\newcommand{\twoprem}[2]{\genfrac{}{}{0pt}{0}{\strut #1}{\strut #2}}
+\newcommand{\threeprem}[3]{\twoprem{#1}{\twoprem{#2}{#3}}}
+\newcommand{\fourprem}[4]{\twoprem{#1}{\threeprem{#2}{#3}{#4}}}
+\newcommand{\fiveprem}[5]{\twoprem{#1}{\fourprem{#2}{#3}{#4}{#5}}}
+~
+
+## Problem 16 {-}
+
+### (a) Awk-like semantics {-}
+
+#### UnboundVar:
+
+$\inference%
+  {x \notin @dom  \rho \\ x \notin @dom \xi}%
+  {\state{@VAR(x),\xi,\phi,\rho} \yields \state{0,\xi\{x \mapsto 0\},\phi,\rho}}$
+
+#### GlobalAssign for unbound variable:
+
+$\inference%
+  {x \notin @dom  \rho \\ \state{e,\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'}}%
+  {\state{@SET(x,e),\xi,\phi,\rho} \yields \state{v,\xi'\{x \mapsto v\},\phi,\rho'}}$
+
+### (b) Icon-like semantics {-}
+
+#### UnboundVar:
+
+$\inference%
+  {x \notin @dom  \rho \\ x \notin @dom \xi}%
+  {\state{@VAR(x),\xi,\phi,\rho} \yields \state{0,\xi,\phi,\rho\{x \mapsto 0\}}}$
+
+#### FormalAssign for unbound variable:
+
+  $\inference%
+    {\threeprem{x \notin @dom  \rho}%
+               {x \notin @dom \xi}%
+               {\state{e,\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'}}}%
+    {\state{@SET(x,e),\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'\{x \mapsto v\}}}$
+
+### (c) Which do you prefer and why? {-}
+
+I prefer Icon-like semantics. Declaring a global variable is something I generally do more conscientiously,
+with consideration as to whether said varible really justifies global status. If I introduce an unbound variable
+in some procedure, it is more likely I only intend to use it within the immediate scope. I feel that Awk-like semantics would
+more readily yield a program with a pool of unnecessarily global variables. With respect to the behavior of the interpreter, however, 
+Awk-like semantics appear to require less work; the same rule for assignment (in terms of verifying premises) can be applied to both
+unbound and bound, global variables. 
+
+## Problem 13 {-}
+
+$\inference%
+    {\twoprem{\inference%
+  {{x\in @dom \rho} \\ \inference{}{\state{@LITERAL(3),\xi,\phi,\rho} \yields \state{3,\xi,\phi,\rho}}}%
+  {\state{@SET(x,@LITERAL(3)),\xi,\phi,\rho} \yields \state{3,\xi,\phi,\rho\{x \mapsto 3\}}}}%
+               {\inference%
+  {x\in @dom \rho \\ \rho(x) = 3}%
+  {\state{@VAR(x),\xi,\phi,\rho} \yields \state{3,\xi,\phi,\rho}}}}%
+    {\state{@BEGIN(@SET(x,@LITERAL(3)),@VAR(x)),\xi,\phi,\rho} \yields \state{3,\xi,\phi,\rho}}$
+
+## Problem 14 {-}
+
+$\state{@VAR(x),\xi,\phi,\rho} \yields \state{v2,\xi'',\phi,\rho''}$
+#### Apply IfTrue:
+$\inference%
+    {\threeprem{\state{@VAR(x),\xi,\phi,\rho} \yields \state{v0,\xi,\phi,\rho}}%
+               {v0 \neq 0}%
+               {\state{@VAR(x),\xi,\phi,\rho} \yields \state{v1,\xi,\phi,\rho}}}%
+    {\state{@IF(@VAR(x),@VAR(x),@LITERAL(0)),\xi,\phi,\rho} \yields \state{v1,\xi,\phi,\rho}}$
+    
+  
+$v1$ gets the value of $\state{@VAR(x),\xi,\phi,\rho}$; $v2$ has this value; $v1 = v2$
+#### Apply IfFalse:
+$\inference%
+    {\threeprem{\state{@VAR(x),\xi,\phi,\rho} \yields \state{v0,\xi,\phi,\rho}}%
+               {v0 = 0}%
+               {\state{@LITERAL(0),\xi,\phi,\rho} \yields \state{0,\xi,\phi,\rho}}}%
+    {\state{@IF(@VAR(x),@VAR(x),@LITERAL(0)),\xi,\phi,\rho} \yields \state{0,\xi,\phi,\rho}}$
+   
+   
+$v1$ gets 0; the second premise shows that $\state{@VAR(x),\xi,\phi,\rho}$ yields the value 0; $v2$ has this value; $v1 = v2$
+    
+## Problem 23 {-}
+
+#### Base Cases:
+
+$\inference%
+  {}%
+  {\state{@LITERAL(v),\xi,\phi,\rho} \yields \state{v,\xi,\phi,\rho}}$
+  
+  
+  $\inference%
+  {x \in @dom  \rho}%
+  {\state{@VAR(x),\xi,\phi,\rho} \yields \state{\rho(x),\xi,\phi,\rho}}$
+  
+    
+  $\inference%
+  {x \notin @dom  \rho \\ x \in @dom  \xi}%
+  {\state{@VAR(x),\xi,\phi,\rho} \yields \state{\xi(x),\xi,\phi,\rho}}$
+      
+      
+  $\inference%
+  {}%
+  {\state{@BEGIN(),\xi,\phi,\rho} \yields \state{0,\xi,\phi,\rho}}$
+  
+  
+  These base cases show that $\rho$ is not changed; each expression pops $\rho$ from the stack and does 
+  not operate on it. $\rho$, the only copy, is pushed back onto the stack unchanged; no environment data are lost.
+  
+  
+#### Inductive steps:
+$\inference%
+  {x \in @dom  \rho \\ \state{e,\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'}}%
+  {\state{@SET(x,e),\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'\{x \mapsto v\}}}$
+  
+  
+  $\rho$ is popped and used to evaluate the expression `e`; $\rho'$ can then be pushed onto the stack, while $\rho$ is discarded.
+  
+  
+$\inference%
+    {\threeprem{x \notin @dom  \rho}%
+               {x \in @dom  \xi}
+               {\state{e,\xi,\phi,\rho} \yields \state{v,\xi',\phi,\rho'}}}%
+    {\state{@SET(x,e),\xi,\phi,\rho} \yields \state{v,\xi'\{x \mapsto v\},\phi,\rho'}}$
+    
+    
+      $\rho$ is popped and used to evaluate the expression `e`; $\rho'$ can then be pushed onto the stack, while $\rho$ is discarded.
+      
+      
+      <IfTrue rule>
+    
+  Evaluating $e1$ can pop $\rho$ off the stack and push $\rho'$ on the stack. Only $e2$ then uses $\rho'$ and produces $\rho''$, which can be
+  safely pushed on the stack.
+  
+  
+  This is tedious and I'm sorry (for my grade).
