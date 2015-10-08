@@ -1,0 +1,25 @@
+Title         : Scheme Theory
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+<!-- MathDefs allows us to define some useful commands for formatting
+     inference rules -->
+
+~ MathDefs
+\newcommand{\state}[1]{\langle #1 \rangle}
+\newcommand{\inference}[2]{\dfrac{#1}{#2}}
+\newcommand{\yields}[0]{\Downarrow}
+\newcommand{\twoprem}[2]{\genfrac{}{}{0pt}{0}{\strut #1}{\strut #2}}
+\newcommand{\threeprem}[3]{\twoprem{#1}{\twoprem{#2}{#3}}}
+\newcommand{\fourprem}[4]{\twoprem{#1}{\threeprem{#2}{#3}{#4}}}
+\newcommand{\fiveprem}[5]{\twoprem{#1}{\fourprem{#2}{#3}{#4}{#5}}}
+~
+
+## Problem 31 {-}
+
