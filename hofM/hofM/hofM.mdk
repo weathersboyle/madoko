@@ -1,0 +1,34 @@
+Title         : Higher-order Functions
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+## Problem M {-}
+
+####Prove: (o ((curry map) f) ((curry map) g)) = ((curry map) (o f g))
+\
+The proof is by calculational techniques, demonstrating that when applied to the same argument, xs, the
+two functions produce the same result.
+
+#### Left side:
+\
+((o ((curry map) f) ((curry map) g)) xs) \
+[**= {apply-compose law}**]{ padding=4ex } \
+(((curry map) f) (((curry map) g) xs)) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(((curry map) f) (map g xs)) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(map f (map g xs)) \
+
+#### Right side:
+\
+(((curry map) (o f g)) xs) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(map (o f g) xs)
+
+####Prove: (map f (map g xs)) = (map (o f g) xs)
