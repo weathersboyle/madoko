@@ -1,0 +1,65 @@
+Title         : Higher-order Functions
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+## Problem M {-}
+
+####Prove: (o ((curry map) f) ((curry map) g)) = ((curry map) (o f g))
+\
+The proof is by calculational techniques, demonstrating that when applied to the same argument, xs, the
+two functions produce the same result.
+
+#### Left side:
+\
+(((curry map) f) ((curry map) g)) \
+[**= {apply-compose law}**]{ padding=4ex } \
+(length \
+[**= {null?-empty law}**]{ padding=4ex } \
+(length \
+[(if #t]{ padding=4ex } \
+['()]{ padding=8ex } \
+[(append (reverse (cdr \'())) (list1 (car \'())))))]{ padding=8ex } \
+[**= {if-#t law}**]{ padding=4ex } \
+(length '())
+
+#### Induction step; we assume xs is not nil, and therefore can be expressed as (cons z zs):
+\
+(length (reverse (cons z zs))) \
+[**= {substitute actual parameters in definition of reverse}**]{ padding=4ex } \
+(length \
+[(if (null? (cons z zs))]{ padding=4ex } \
+[xs]{ padding=8ex } \
+[(append (reverse (cdr (cons z zs))) (list1 (car (cons z zs))))))]{ padding=8ex } \
+[**= {null?-cons law}**]{ padding=4ex } \
+(length \
+[(if #f]{ padding=4ex } \
+[xs]{ padding=8ex } \
+[(append (reverse (cdr (cons z zs))) (list1 (car (cons z zs))))))]{ padding=8ex } \
+[**= {if-#f law}**]{ padding=4ex } \
+(length \
+[(append (reverse (cdr (cons z zs))) (list1 (car (cons z zs))))))]{ padding=4ex } \
+[**= {car-cons law}**]{ padding=4ex } \
+(length \
+[(append (reverse (cdr (cons z zs))) (list1 z))]{ padding=4ex } \
+[**= {cdr-cons law}**]{ padding=4ex } \
+(length \
+[(append (reverse zs) (list1 z))]{ padding=4ex } \
+[**= {apply list1}**]{ padding=4ex } \
+(length \
+[(append (reverse zs) (z))]{ padding=4ex } \
+[**= {(length (append xs ys)) = (+ (length xs) (length ys))}**]{ padding=4ex } \
+(+ (length (reverse zs)) (length (z))) \
+[**= {induction hypothesis}**]{ padding=4ex } \
+(+ (length zs) (length (z))) \
+[**= {length of a list with a single element is 1}**]{ padding=4ex } \
+(+ (length zs) 1) \
+[**= {length-cons law}**]{ padding=4ex } \
+(length (cons z zs))
+
+
