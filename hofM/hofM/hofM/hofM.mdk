@@ -1,0 +1,59 @@
+Title         : Higher-order Functions
+Subtitle      : COMP105 Fall 2015
+Author        : Rob Boyle
+
+Comment: These parameters govern typesetting of code and formulas
+~Pre        : css-padding-left=1em
+~Math-Inline: input=mathpre
+
+[TITLE]
+
+## Problem M {-}
+
+####I. Prove: (o ((curry map) f) ((curry map) g)) = ((curry map) (o f g))
+
+The proof is by calculational techniques, demonstrating that when applied to the same argument, xs, the
+two functions produce the same result.
+
+#### Left side:
+
+((o ((curry map) f) ((curry map) g)) xs) \
+[**= {apply-compose law}**]{ padding=4ex } \
+(((curry map) f) (((curry map) g) xs)) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(((curry map) f) (map g xs)) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(map f (map g xs)) \
+
+#### Right side:
+
+(((curry map) (o f g)) xs) \
+[**= {apply-curried law}**]{ padding=4ex } \
+(map (o f g) xs)
+
+#### II. Prove: (map f (map g xs)) = (map (o f g) xs)
+The proof is by calculational techniques, demonstrating that when applied to the same argument, xs, the
+two functions produce the same result. Note: the two functions here are the results of transforming the 
+two original functions in proof I.
+
+#### Left side:
+(map f (map g xs)) \
+[**= {proof III below}**]{ padding=4ex } \
+(map f '((g x1) (g x2) ... (g xn))) \
+[**= {proof III below}**]{ padding=4ex } \
+'((f (g x1)) (f (g x2)) ... (f (g xn)))
+
+#### Right side:
+(map (o f g) xs) \
+[**= {proof III below}**]{ padding=4ex } \
+'(((o f g) x1) ((o f g) x2) ... ((o f g) g xn))\
+[**= {apply-compose law}**]{ padding=4ex } \
+'((f (g x1)) (f (g x2)) ... (f (g xn)))
+
+Both sides of the equation are equal. QED.
+
+#### III. Prove: (map f xs) = '((f x1) (f x2) ... (f xn))
+
+
+
+
